@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { ApiResponse } from "../../../types.js";
+import { ApiResponse } from "../../../types/types.js";
 
 export const sendResponse = <T>(
   res: Response,

@@ -16,6 +16,7 @@ export const requestLogger = (
       url: req.originalUrl,
       statusCode: res.statusCode,
       ip: req.ip,
+      duration,
     });
   });
 
