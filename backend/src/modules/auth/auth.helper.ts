@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import { env } from "../../config/env.config.js";
 import { JwtPayloadType } from "./auth.type.js";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
+import { Response } from "express";
+import ms from "ms";
 
 const saltRounds = Number(env?.SALT_ROUNDS);
 
@@ -34,4 +36,23 @@ export const verifyAccessToken = (token: string) => {
 
 export const verifyRefreshToken = (token: string) => {
   return jwt.verify(token, env?.REFRESH_TOKEN_SECRET!) as JwtPayload;
+};
+
+export const setAuthCookies = (res: Response, refreshToken: string) => {
+  const refreshTokenAge = ms(env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue);
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: env.NODE_ENV === "prod",
+    sameSite: "lax", // only in development,
+    maxAge: refreshTokenAge,
+  });
+};
+
+export const clearAuthCookies = (res: Response) => {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: env.NODE_ENV === "prod",
+    sameSite: "lax",
+  });
 };
