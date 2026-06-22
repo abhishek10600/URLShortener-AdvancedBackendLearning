@@ -1,0 +1,33 @@
+import { NextFunction, Request, Response } from "express";
+import { catchAsync } from "../../utils/common/helpers/CatchAsync.js";
+import { urlService } from "./url.container.js";
+import { sendResponse } from "../../utils/common/response/AppResonse.js";
+
+export class UrlController {
+  createShortUrl = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { originalUrl } = req.body;
+
+      const userId = req.user?.userId as string;
+
+      const result = await urlService.createShortUrl({ originalUrl }, userId);
+
+      sendResponse(res, 201, {
+        success: true,
+        message: "Short Code Created Successfully",
+        data: result,
+      });
+    },
+  );
+
+  redirectToOriginalURL = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const shortCode = req.params.shortCode as string;
+
+      const originalUrl =
+        await urlService.getOriginalUrlFromShortCode(shortCode);
+
+      res.redirect(originalUrl);
+    },
+  );
+}
