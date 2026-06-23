@@ -1,18 +1,13 @@
-import crypto from "crypto";
+import { customAlphabet } from "nanoid";
+import { env } from "../../config/env.config.js";
 
-const CHARACTERS =
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const SHORTCODELENGTH = env.URL_SHORTCODE_LENGTH || 8;
 
-const SHORTCODELENGTH = 6;
+const createId = customAlphabet(
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+  SHORTCODELENGTH,
+);
 
 export const createShortCode = (): string => {
-  const randomBytes = crypto.randomBytes(SHORTCODELENGTH);
-
-  let shortCode = "";
-
-  for (let i = 0; i < SHORTCODELENGTH; i++) {
-    shortCode += CHARACTERS[randomBytes[i] % CHARACTERS.length];
-  }
-
-  return shortCode;
+  return createId();
 };
