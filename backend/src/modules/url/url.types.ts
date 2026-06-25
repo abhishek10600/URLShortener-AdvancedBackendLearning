@@ -3,3 +3,7 @@ export type createShortUrlType = {
   userId: string;
   shortCode: string;
 };
+
+export type updateShortUrlType = {
+  updatedOriginalUrl: string;
+};

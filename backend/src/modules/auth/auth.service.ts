@@ -1,3 +1,4 @@
+import { logger } from "../../config/logger.js";
 import { AppError } from "../../utils/common/Errors/AppError.js";
 import {
   comparePassword,
@@ -35,6 +36,11 @@ export class AuthService {
       userId: user.id,
     });
 
+    logger.info({
+      event: "User Registed",
+      userId: user.id,
+    });
+
     return {
       user: toUserResponse(user),
       accessToken,
@@ -63,6 +69,11 @@ export class AuthService {
     });
 
     const refreshToken = signRefreshToken({
+      userId: user.id,
+    });
+
+    logger.info({
+      event: "User logged in",
       userId: user.id,
     });
 

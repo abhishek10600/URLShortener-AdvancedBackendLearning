@@ -11,3 +11,7 @@ const createId = customAlphabet(
 export const createShortCode = (): string => {
   return createId();
 };
+
+export const getShortUrlCacheKey = (shortCode: string) => {
+  return `shortCode:${shortCode}`;
+};
