@@ -34,14 +34,15 @@ export class UrlService {
   }
 
   async getOriginalUrlFromShortCode(shortCode: string) {
-    const cachedOriginalUrl = await getCache(getShortUrlCacheKey(shortCode));
+    const cachedShortUrl = await getCache(getShortUrlCacheKey(shortCode));
 
-    if (cachedOriginalUrl) {
+    if (cachedShortUrl) {
+      const parsedCachedShortUrl = JSON.parse(cachedShortUrl);
       logger.info({
         event: "CACHE_HIT",
         shortCode,
       });
-      return cachedOriginalUrl;
+      return parsedCachedShortUrl;
     }
 
     logger.info({
@@ -57,11 +58,11 @@ export class UrlService {
 
     await setCache(
       getShortUrlCacheKey(shortUrl.shortCode),
-      `${shortUrl.originalUrl}`,
+      JSON.stringify(shortUrl),
       300,
     );
 
-    return shortUrl.originalUrl;
+    return shortUrl;
   }
 
   async updateOriginalUrl(
@@ -87,7 +88,7 @@ export class UrlService {
 
     await setCache(
       getShortUrlCacheKey(updateShortUrl.shortCode),
-      `${updateShortUrl.originalUrl}`,
+      JSON.stringify(updateShortUrl),
       300,
     );
 

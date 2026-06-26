@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/common/helpers/CatchAsync.js";
 import { urlService } from "./url.container.js";
 import { sendResponse } from "../../utils/common/response/AppResonse.js";
+import { analyticsService } from "../analytics/analytics.container.js";
 
 export class UrlController {
   createShortUrl = catchAsync(
@@ -24,10 +25,11 @@ export class UrlController {
     async (req: Request, res: Response, next: NextFunction) => {
       const shortCode = req.params.shortCode as string;
 
-      const originalUrl =
-        await urlService.getOriginalUrlFromShortCode(shortCode);
+      const shortUrl = await urlService.getOriginalUrlFromShortCode(shortCode);
 
-      res.redirect(originalUrl);
+      await analyticsService.recordClick(shortUrl, req);
+
+      res.redirect(shortUrl.originalUrl);
     },
   );
 
