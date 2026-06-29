@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/common/helpers/CatchAsync.js";
 import { urlService } from "./url.container.js";
 import { sendResponse } from "../../utils/common/response/AppResonse.js";
-import { analyticsService } from "../analytics/analytics.container.js";
+import { analyticsQueue } from "../../queues/analyticsQueue.js";
 
 export class UrlController {
   createShortUrl = catchAsync(
@@ -27,7 +27,24 @@ export class UrlController {
 
       const shortUrl = await urlService.getOriginalUrlFromShortCode(shortCode);
 
-      await analyticsService.recordClick(shortUrl, req);
+      await analyticsQueue.add(
+        "record-analytics",
+        {
+          shortUrlId: shortUrl.id,
+          ipAddress: req.ip,
+          userAgent: req.headers["user-agent"],
+          referrer: req.get("Referer"),
+        },
+        {
+          attempts: 5,
+          backoff: {
+            type: "exponential",
+            delay: 2000,
+          },
+          removeOnComplete: 1000,
+          removeOnFail: 5000,
+        },
+      );
 
       res.redirect(shortUrl.originalUrl);
     },
