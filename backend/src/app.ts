@@ -10,8 +10,12 @@ import cookieParser from "cookie-parser";
 import { env } from "./config/env.config.js";
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
 import { sendResponse } from "./utils/common/response/AppResonse.js";
+import { globalRateLimiter } from "./middlewares/rate-limit/global-rate-limit.middleware.js";
 
 export const app = express();
+
+app.set("trust proxy", 1);
+app.disable("x-powered-by");
 
 app.use(helmet());
 app.use(requestLogger);
@@ -20,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: env?.FRONTEND_URL,
+    credentials: true,
   }),
 );
 app.use(cookieParser());
@@ -33,6 +38,8 @@ app.get("/health", (req: Request, res: Response) => {
     },
   });
 });
+
+app.use(globalRateLimiter);
 
 import authRouter from "./modules/auth/auth.route.js";
 import urlRouter from "./modules/url/url.route.js";

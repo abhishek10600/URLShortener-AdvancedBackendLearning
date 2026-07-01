@@ -1,7 +1,11 @@
 import { logger } from "../../config/logger.js";
 import { AppError } from "../../utils/common/Errors/AppError.js";
 import { getCache, setCache } from "./cache/cache.servie.js";
-import { createShortCode, getShortUrlCacheKey } from "./url.helpers.js";
+import {
+  createShortCode,
+  getShortUrlCacheKey,
+  parseUrl,
+} from "./url.helpers.js";
 import { IUrlRepository } from "./url.interface.js";
 import { UpdateUrlInputType, UrlInputType } from "./url.schema.js";
 
@@ -10,6 +14,8 @@ export class UrlService {
 
   async createShortUrl(data: UrlInputType, userId: string) {
     const originalUrl = data.originalUrl;
+
+    const parsedOriginalUrl = parseUrl(originalUrl);
 
     const MAX_RETRIES = 5;
 
@@ -21,7 +27,7 @@ export class UrlService {
 
       if (!existingShortUrl) {
         const shortUrl = await this.urlRepo.createShortUrl({
-          originalUrl,
+          originalUrl: parsedOriginalUrl,
           userId,
           shortCode,
         });

@@ -3,6 +3,7 @@ import { validate } from "../../middlewares/validate.middleware.js";
 import { loginUserSchema, registerUserSchema } from "./auth.schema.js";
 import { AuthController } from "./auth.controller.js";
 import { authMiddleware } from "../../middlewares/authentication.middleware.js";
+import { loginSlidingWindowRateLimit } from "../../middlewares/rate-limit/login-sliding-window-rate-limit.js";
 
 const router = express.Router();
 
@@ -14,7 +15,11 @@ router
 
 router
   .route("/login")
-  .post(validate(loginUserSchema), authController.loginUser);
+  .post(
+    loginSlidingWindowRateLimit,
+    validate(loginUserSchema),
+    authController.loginUser,
+  );
 
 router.route("/me").get(authMiddleware, authController.getLOggedInUser);
 
