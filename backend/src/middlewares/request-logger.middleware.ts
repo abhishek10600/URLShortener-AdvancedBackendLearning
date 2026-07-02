@@ -6,17 +6,18 @@ export const requestLogger = (
   res: Response,
   next: NextFunction,
 ) => {
-  const start = Date.now();
+  const start = process.hrtime.bigint();
 
   res.on("finish", () => {
-    const duration = Date.now() - start;
+    const duration = Number(process.hrtime.bigint() - start) / 1_000_000;
 
     logger.info({
+      event: "HTTP_REQUEST",
       method: req.method,
-      url: req.originalUrl,
+      path: req.originalUrl,
       statusCode: res.statusCode,
       ip: req.ip,
-      duration,
+      durationMs: Number(duration.toFixed(2)),
     });
   });
 

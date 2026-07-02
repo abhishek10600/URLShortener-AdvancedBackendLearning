@@ -21,11 +21,7 @@ export const getShortUrlCacheKey = (shortCode: string) => {
 
 export const parseUrl = (originalUrl: string): string => {
   try {
-    console.log({ unparsedUrl: originalUrl });
     const parsedUrl = new URL(originalUrl);
-    // console.log({ parsedUrl });
-    console.log(parsedUrl);
-    console.log(parsedUrl.protocol);
 
     if (!ALLOWEDPROTOCOLS.includes(parsedUrl.protocol)) {
       throw new AppError("Only http and https URLs", 400);
