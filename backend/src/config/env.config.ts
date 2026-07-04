@@ -26,6 +26,7 @@ export const envSchema = z.object({
   SHORT_URL_TOKEN_BUCKET_CAPACITY: z.coerce.number(),
   SHORT_URL_TOKEN_REFILL_RATE: z.coerce.number(),
   SHORT_URL_TOKEN_REFILL_INTERVAL: z.coerce.number(),
+  URL_CACHE_TTL: z.coerce.number(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

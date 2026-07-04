@@ -56,7 +56,10 @@ export class UrlService {
       shortCode,
     });
 
+    console.log({ shortCode });
     const shortUrl = await this.urlRepo.findShortUrlbyShortCode(shortCode);
+
+    console.log({ dbShortUr: shortUrl });
 
     if (!shortUrl) {
       throw new AppError("Short Url not found", 404);
@@ -64,11 +67,17 @@ export class UrlService {
 
     await setCache(
       getShortUrlCacheKey(shortUrl.shortCode),
-      JSON.stringify(shortUrl),
+      JSON.stringify({
+        shortUrlId: shortUrl.id,
+        originalUrl: shortUrl.originalUrl,
+      }),
       300,
     );
 
-    return shortUrl;
+    return {
+      shortUrlId: shortUrl.id,
+      originalUrl: shortUrl.originalUrl,
+    };
   }
 
   async updateOriginalUrl(

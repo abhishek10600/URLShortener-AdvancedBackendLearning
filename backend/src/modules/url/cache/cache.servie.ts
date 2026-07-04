@@ -1,8 +1,9 @@
+import { env } from "../../../config/env.config.js";
 import { logger } from "../../../config/logger.js";
 import redis from "../../../lib/redis.js";
 
 export const setCache = async (key: string, value: string, ttl: number) => {
-  await redis.set(key, value, "EX", ttl);
+  await redis.set(key, value, "EX", env.URL_CACHE_TTL);
 
   logger.debug({
     event: "CACHE_SET",
@@ -12,7 +13,23 @@ export const setCache = async (key: string, value: string, ttl: number) => {
 };
 
 export const getCache = async (key: string) => {
-  return redis.get(key);
+  // Fixed TTL
+  // return redis.get(key);
+
+  // Sliding TTL
+  const result = await redis.multi().get(key).expire(key, 600).exec();
+
+  if (!result) {
+    return null;
+  }
+
+  const [[getError, value]] = result;
+
+  if (getError) {
+    throw getError;
+  }
+
+  return value as string | null;
 };
 
 export const deleteCache = async (key: string) => {
