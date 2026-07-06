@@ -40,4 +40,15 @@ export class UrlRepository implements IUrlRepository {
       }),
     );
   }
+
+  async findTopHotUrls(limit: number): Promise<ShortURL[]> {
+    return measureQuery("findTopHotUrls", () =>
+      prisma.shortURL.findMany({
+        orderBy: {
+          clickCount: "desc",
+        },
+        take: limit,
+      }),
+    );
+  }
 }

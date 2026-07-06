@@ -8,4 +8,5 @@ export interface IUrlRepository {
     shortCode: string,
     data: updateShortUrlType,
   ): Promise<ShortURL | null>;
+  findTopHotUrls(limit: number): Promise<ShortURL[]>;
 }

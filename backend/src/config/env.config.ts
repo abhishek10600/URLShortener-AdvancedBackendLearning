@@ -27,6 +27,9 @@ export const envSchema = z.object({
   SHORT_URL_TOKEN_REFILL_RATE: z.coerce.number(),
   SHORT_URL_TOKEN_REFILL_INTERVAL: z.coerce.number(),
   URL_CACHE_TTL: z.coerce.number(),
+  HOT_URL_CACHE_TTL: z.coerce.number(),
+  CACHE_WARMER_TIME_EVERY: z.coerce.number(),
+  WARM_HOT_URLS_LIMIT: z.coerce.number(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

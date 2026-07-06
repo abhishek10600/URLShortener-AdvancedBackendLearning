@@ -107,7 +107,10 @@ export class UrlService {
 
     await setCache(
       getShortUrlCacheKey(updateShortUrl.shortCode),
-      JSON.stringify(updateShortUrl),
+      JSON.stringify({
+        shortUrlId: updateShortUrl.id,
+        originalUrl: updateShortUrl.originalUrl,
+      }),
       300,
     );
 

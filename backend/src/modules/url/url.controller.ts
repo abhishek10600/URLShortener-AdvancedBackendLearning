@@ -25,11 +25,7 @@ export class UrlController {
     async (req: Request, res: Response, next: NextFunction) => {
       const shortCode = req.params.shortCode as string;
 
-      console.log({ controllerShortCode: shortCode });
-
       const shortUrl = await urlService.getOriginalUrlFromShortCode(shortCode);
-
-      console.log({ shortUrl });
 
       await analyticsQueue.add(
         "record-analytics",

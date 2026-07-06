@@ -28,6 +28,7 @@ id String @id @default(cuid())
 userId String
 originalUrl String
 shortCode String @unique
+clickCount Int @default(0)
 createdAt DateTime @default(now())
 updatedAt DateTime @updatedAt
 

@@ -10,7 +10,6 @@ new Worker<RecordAnalyticsJob>(
   async (job) => {
     try {
       if (job.name === "record-analytics") {
-        // console.log({job.data})
         logger.info({
           event: "ANALYTICS_JOB_STARTED",
           jobId: job.id,
