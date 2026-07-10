@@ -30,6 +30,8 @@ export const envSchema = z.object({
   HOT_URL_CACHE_TTL: z.coerce.number(),
   CACHE_WARMER_TIME_EVERY: z.coerce.number(),
   WARM_HOT_URLS_LIMIT: z.coerce.number(),
+  LOCK_TTL_SECONDS: z.coerce.number(),
+  JITTER_PERCENT: z.coerce.number()
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

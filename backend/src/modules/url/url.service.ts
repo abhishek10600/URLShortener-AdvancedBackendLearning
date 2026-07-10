@@ -1,6 +1,7 @@
 import { logger } from "../../config/logger.js";
 import { AppError } from "../../utils/common/Errors/AppError.js";
 import { bloomService } from "../bloom/bloom.container.js";
+import { LockService } from "../lock/lock.service.js";
 import { getCache, setCache } from "./cache/cache.servie.js";
 import {
   createShortCode,
@@ -11,7 +12,7 @@ import { IUrlRepository } from "./url.interface.js";
 import { UpdateUrlInputType, UrlInputType } from "./url.schema.js";
 
 export class UrlService {
-  constructor(private urlRepo: IUrlRepository) {}
+  constructor(private urlRepo: IUrlRepository, private readonly lockService: LockService) {}
 
   async createShortUrl(data: UrlInputType, userId: string) {
     const originalUrl = data.originalUrl;
@@ -90,28 +91,73 @@ export class UrlService {
       shortCode,
     });
 
-    const shortUrl = await this.urlRepo.findShortUrlbyShortCode(shortCode);
+    // aquired distributed lock
+    const lock = await this.lockService.aquireLock(shortCode)
 
-    if (!shortUrl) {
+    if (!lock.acquired) {
+      logger.info({
+        event: "CACHE_REBUILD_IN_PROGRESS",
+        shortCode
+      })
+
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
+      const cachedAgain = await getCache(getShortUrlCacheKey(shortCode))
+
+      if (cachedAgain) {
+        const parsedCachedAgain = JSON.parse(cachedAgain);
+        logger.info({
+          event: "CACHE_HIT_AFTER_WAIT",
+          shortCode
+        })
+
+        return parsedCachedAgain
+      }
+
       logger.warn({
-        event: "BLOOM_FALSE_POSITIVE",
-        shortCode,
-      });
-      throw new AppError("Short Url not found", 404);
+        event: "CACHE_REBUILD_TIMEOUT",
+        shortCode
+      })
+
+      throw new AppError("Please retry shortly", 503)
     }
 
-    const response = {
-      shortUrlId: shortUrl.id,
-      originalUrl: shortUrl.originalUrl,
-    };
+    try {
+      const shortUrl = await this.urlRepo.findShortUrlbyShortCode(shortCode);
 
-    await setCache(
-      getShortUrlCacheKey(shortUrl.shortCode),
-      JSON.stringify(response),
-      300,
-    );
+      if (!shortUrl) {
+        logger.warn({
+          event: "BLOOM_FALSE_POSITIVE",
+          shortCode,
+        });
+        throw new AppError("Short Url not found", 404);
+      }
 
-    return response;
+      const response = {
+        shortUrlId: shortUrl.id,
+        originalUrl: shortUrl.originalUrl,
+      };
+
+      await setCache(
+        getShortUrlCacheKey(shortUrl.shortCode),
+        JSON.stringify(response),
+        300,
+      );
+
+      logger.info({
+        event: "CACHE_REBUILT",
+        shortCode
+      })
+
+      return response;
+
+    } finally {
+      if (lock.lockId) {
+        console.log({lock})
+        await this.lockService.releaseLock(shortCode, lock.lockId)
+      }
+    }
+
   }
 
   async updateOriginalUrl(
