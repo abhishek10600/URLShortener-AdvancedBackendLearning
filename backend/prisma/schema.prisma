@@ -50,7 +50,8 @@ country   String?
 
 shortUrl ShortURL @relation(fields: [shortUrlId], references: [id], onDelete: Cascade)
 
-@@index([shortUrlId])
-@@index([clickedAt])
+// @@index([shortUrlId])
+// @@index([clickedAt])
+@@index([shortUrlId, clickedAt])
 @@map("click_analytics")
 }
