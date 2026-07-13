@@ -2,7 +2,7 @@ import { ClickAnalytics } from "../../generated/prisma/index.js";
 import { prisma } from "../../lib/prisma.js";
 import { measureQuery } from "../../utils/common/helpers/MeasureQuery.js";
 import { IAnalyticsRepository } from "./analytics.interface.js";
-import { creteAnalyticsType, RecordClickInputType } from "./analytics.types.js";
+import { AnalyticsCursorType, creteAnalyticsType, RecordClickInputType } from "./analytics.types.js";
 
 export class AnalyitcsRepository implements IAnalyticsRepository {
   async createAnalytics(data: creteAnalyticsType): Promise<ClickAnalytics> {
@@ -37,5 +37,40 @@ export class AnalyitcsRepository implements IAnalyticsRepository {
         }),
       ]),
     );
+  }
+
+  findAnalyticsByShortUrlId(shortUrlId: string, limit: number, cursor?: AnalyticsCursorType): Promise<ClickAnalytics[]> {
+    return measureQuery("findAnalyticsByShortUrlId", () => prisma.clickAnalytics.findMany({
+      where: {
+        shortUrlId,
+
+        ...(cursor && {
+          OR: [
+            {
+              clickedAt: {
+                lt: cursor.clickedAt
+              },
+            },
+            {
+              clickedAt: cursor.clickedAt,
+              id: {
+                lt: cursor.id
+              }
+            }
+          ]
+        })
+      },
+
+      orderBy: [
+        {
+          clickedAt: "desc"
+        },
+        {
+          id: "desc"
+        }
+      ],
+
+      take: limit + 1
+    }))
   }
 }

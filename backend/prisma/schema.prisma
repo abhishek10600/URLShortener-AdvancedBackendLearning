@@ -36,6 +36,8 @@ analytics ClickAnalytics[]
 
 user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+@@index([userId, createdAt(sort: Desc), id(sort: Desc)])
+
 @@map("short_urls")
 }
 
@@ -50,8 +52,6 @@ country   String?
 
 shortUrl ShortURL @relation(fields: [shortUrlId], references: [id], onDelete: Cascade)
 
-// @@index([shortUrlId])
-// @@index([clickedAt])
-@@index([shortUrlId, clickedAt])
+@@index([shortUrlId, clickedAt(sort: Desc), id(sort: Desc)])
 @@map("click_analytics")
 }

@@ -20,3 +20,8 @@ export type RecordClickInputType = {
   referrer?: string;
   country?: string;
 };
+
+export type AnalyticsCursorType = {
+  clickedAt: Date
+  id: string
+}

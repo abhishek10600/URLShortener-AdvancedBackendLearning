@@ -5,6 +5,8 @@ import { LockService } from "../lock/lock.service.js";
 import { getCache, setCache } from "./cache/cache.servie.js";
 import {
   createShortCode,
+  decodeCursor,
+  encodeCursor,
   getShortUrlCacheKey,
   parseUrl,
 } from "./url.helpers.js";
@@ -56,6 +58,29 @@ export class UrlService {
     }
 
     throw new AppError("Failed to generate a unique short code", 400);
+  }
+
+  async getUserUrls(userId: string, limit: number, cursor?: string) {
+    const safeLimit = Math.min(Math.max(limit, 1), 100)
+
+    const decodedCurosr = cursor ? decodeCursor(cursor) : undefined
+
+    const urls = await this.urlRepo.findShortUrlsByUserId(userId, safeLimit, decodedCurosr)
+
+    const hasMore = urls.length > safeLimit
+
+    const items = hasMore ? urls.slice(0, safeLimit) : urls
+
+    const nextCursor = hasMore ? encodeCursor({
+      createdAt: items[items.length - 1].createdAt,
+      id: items[items.length - 1].id
+    }): null
+
+    return {
+      items,
+      nextCursor,
+      hasMore
+    }
   }
 
   async getOriginalUrlFromShortCode(shortCode: string) {

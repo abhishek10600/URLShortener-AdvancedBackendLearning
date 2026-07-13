@@ -1,6 +1,7 @@
 import { customAlphabet } from "nanoid";
 import { env } from "../../config/env.config.js";
 import { AppError } from "../../utils/common/Errors/AppError.js";
+import { UrlCursor } from "./url.types.js";
 
 const SHORTCODELENGTH = env.URL_SHORTCODE_LENGTH || 8;
 
@@ -32,3 +33,16 @@ export const parseUrl = (originalUrl: string): string => {
     throw new AppError("Invalid URL", 400);
   }
 };
+
+export const encodeCursor = (cursor: UrlCursor): string => {
+  return Buffer.from(JSON.stringify(cursor)).toString("base64")
+}
+
+export const decodeCursor = (cursor: string): UrlCursor => {
+  const decoded = JSON.parse(Buffer.from(cursor, "base64").toString("utf8"))
+
+  return {
+    createdAt: new Date(decoded.createdAt),
+    id: decoded.id
+  }
+}
