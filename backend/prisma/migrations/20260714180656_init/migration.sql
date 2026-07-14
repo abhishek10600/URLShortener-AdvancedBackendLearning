@@ -16,6 +16,7 @@ CREATE TABLE "short_urls" (
     "userId" TEXT NOT NULL,
     "originalUrl" TEXT NOT NULL,
     "shortCode" TEXT NOT NULL,
+    "clickCount" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -42,10 +43,10 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "short_urls_shortCode_key" ON "short_urls"("shortCode");
 
 -- CreateIndex
-CREATE INDEX "click_analytics_shortUrlId_idx" ON "click_analytics"("shortUrlId");
+CREATE INDEX "short_urls_userId_createdAt_id_idx" ON "short_urls"("userId", "createdAt" DESC, "id" DESC);
 
 -- CreateIndex
-CREATE INDEX "click_analytics_clickedAt_idx" ON "click_analytics"("clickedAt");
+CREATE INDEX "click_analytics_shortUrlId_clickedAt_id_idx" ON "click_analytics"("shortUrlId", "clickedAt" DESC, "id" DESC);
 
 -- AddForeignKey
 ALTER TABLE "short_urls" ADD CONSTRAINT "short_urls_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

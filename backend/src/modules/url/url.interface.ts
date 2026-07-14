@@ -16,4 +16,6 @@ export interface IUrlRepository {
   ): Promise<ShortURL | null>;
 
   findTopHotUrls(limit: number): Promise<ShortURL[]>;
+
+  simulateLongQuery(): Promise<unknown>
 }

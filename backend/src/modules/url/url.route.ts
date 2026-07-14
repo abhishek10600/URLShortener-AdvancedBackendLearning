@@ -18,6 +18,8 @@ router
     urlController.createShortUrl,
   );
 
+router.route("/simulate-long-query").get(urlController.simulateLongQuery)
+
 router.route("/:shortCode").get(urlController.redirectToOriginalURL);
 
 router

@@ -100,4 +100,13 @@ export class UrlController {
       });
     },
   );
+
+  simulateLongQuery = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    await urlService.simulateLongQuery()
+
+    sendResponse(res, 200, {
+      success: true,
+      message: "Done"
+    })
+  })
 }

@@ -96,4 +96,17 @@ export class UrlRepository implements IUrlRepository {
       }),
     );
   }
+
+  async simulateLongQuery() {
+    console.log(`Starting query: ${new Date().toISOString()}`);
+
+      const result = await prisma.$queryRaw`
+        SELECT 'done'::text
+        FROM pg_sleep(10)
+      `;
+
+      console.log(`Finished query: ${new Date().toISOString()}`);
+
+      return result;
+  }
 }
