@@ -1,0 +1,22 @@
+[databases]
+urlshortenerdb = host=yourserverip port=5432 dbname=yourdatabasename user=dbusername password=dbpassword
+
+[pgbouncer]
+
+listen_addr = 0.0.0.0
+listen_port = 5432
+
+auth_type = plain
+auth_file = /etc/pgbouncer/userlist.txt
+
+pool_mode = transaction
+
+max_client_conn = 1000
+default_pool_size = 10
+reserve_pool_size = 2
+reserve_pool_timeout = 5
+
+server_idle_timeout = 60
+server_lifetime = 3600
+
+admin_users = yourdbusername

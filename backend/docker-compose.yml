@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: pgbouncer
+
+    ports:
+      - "6432:5432"
+
+    volumes:
+      - ./docker/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./docker/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+
+    restart: unless-stopped
