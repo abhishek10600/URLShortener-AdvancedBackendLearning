@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  shortUrls ShortURL[]
+}
+
+model ShortURL {
+  id          String   @id @default(cuid())
+  userId      String
+  originalUrl String
+  shortCode   String   @unique
+  clickCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  analytics ClickAnalytics[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc), id(sort: Desc)])
+  @@map("short_urls")
+}
+
+model ClickAnalytics {
+  id         String   @id @default(cuid())
+  shortUrlId String
+  clickedAt  DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+  referrer   String?
+  country    String?
+
+  shortUrl ShortURL @relation(fields: [shortUrlId], references: [id], onDelete: Cascade)
+
+  @@index([shortUrlId, clickedAt(sort: Desc), id(sort: Desc)])
+  @@map("click_analytics")
+}

@@ -17,7 +17,7 @@ export const globalErrorHandler = (
   error.statusCode = err.statusCode || 500;
   error.status = err.status || "error";
 
-  if (env?.NODE_ENV === "dev") {
+  if (env?.NODE_ENV === "development") {
     logger.error({
       message: error.message,
       stack: err.stack,

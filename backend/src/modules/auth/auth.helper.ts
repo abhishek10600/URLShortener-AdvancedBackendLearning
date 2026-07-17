@@ -4,26 +4,11 @@ import { JwtPayloadType } from "./auth.type.js";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import { Response } from "express";
 import ms from "ms";
-import { performance } from "node:perf_hooks";
-import { logger } from "../../config/logger.js";
 import { measureOperation } from "../../utils/common/helpers/MeasureOperation.js";
 
 const saltRounds = Number(env?.SALT_ROUNDS);
 
 export const hashPassword = async (password: string) => {
-  // const start = performance.now();
-
-  // const passwordHash = await bcrypt.hash(password, saltRounds);
-
-  // const duration = performance.now() - start;
-
-  // logger.info({
-  //   event: "GENERATE_PASSWORD_HASH",
-  //   durationMs: duration,
-  // });
-
-  // return passwordHash;
-  //
   return measureOperation("bcrypt.hash", () =>
     bcrypt.hash(password, saltRounds),
   );
@@ -63,7 +48,7 @@ export const setAuthCookies = (res: Response, refreshToken: string) => {
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: env.NODE_ENV === "prod",
+    secure: env.NODE_ENV === "production",
     sameSite: "lax", // only in development,
     maxAge: refreshTokenAge,
   });
@@ -72,7 +57,7 @@ export const setAuthCookies = (res: Response, refreshToken: string) => {
 export const clearAuthCookies = (res: Response) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: env.NODE_ENV === "prod",
+    secure: env.NODE_ENV === "production",
     sameSite: "lax",
   });
 };

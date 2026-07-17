@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import { User } from "../../generated/prisma/client.js";
+import { User } from "../../../generated/prisma/client.js";
 import { IAuthRepository } from "./auth.interface.js";
 import { RegisterUserType } from "./auth.type.js";
 import { measureQuery } from "../../utils/common/helpers/MeasureQuery.js";

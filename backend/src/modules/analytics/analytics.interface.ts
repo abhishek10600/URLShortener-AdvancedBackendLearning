@@ -1,4 +1,4 @@
-import { ClickAnalytics } from "../../generated/prisma/index.js";
+import { ClickAnalytics } from "../../../generated/prisma/index.js";
 import { AnalyticsCursorType, creteAnalyticsType, RecordClickInputType } from "./analytics.types.js";
 
 export interface IAnalyticsRepository {

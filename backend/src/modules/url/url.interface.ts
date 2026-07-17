@@ -1,4 +1,4 @@
-import { ShortURL } from "../../generated/prisma/client.js";
+import { ShortURL } from "../../../generated/prisma/client.js";
 import { createShortUrlType, updateShortUrlType, UrlCursor } from "./url.types.js";
 
 export interface IUrlRepository {

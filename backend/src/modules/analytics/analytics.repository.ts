@@ -1,4 +1,4 @@
-import { ClickAnalytics } from "../../generated/prisma/index.js";
+import { ClickAnalytics } from "../../../generated/prisma/index.js";
 import { prisma } from "../../lib/prisma.js";
 import { measureQuery } from "../../utils/common/helpers/MeasureQuery.js";
 import { IAnalyticsRepository } from "./analytics.interface.js";
