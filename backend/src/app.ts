@@ -2,14 +2,13 @@ import dotenv from "dotenv";
 dotenv.config({
   path: "./.env",
 });
-import express, { Request, Response } from "express";
+import express from "express";
 import helmet from "helmet";
 import { requestLogger } from "./middlewares/request-logger.middleware.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { env } from "./config/env.config.js";
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
-import { sendResponse } from "./utils/common/response/AppResonse.js";
 import { globalRateLimiter } from "./middlewares/rate-limit/global-rate-limit.middleware.js";
 
 export const app = express();
@@ -29,20 +28,17 @@ app.use(
 );
 app.use(cookieParser());
 
-app.get("/health", (req: Request, res: Response) => {
-  sendResponse(res, 200, {
-    success: true,
-    message: "Api is working fine",
-    data: {
-      status: "healthy",
-    },
-  });
-});
+const healthController = new HealthController()
+
+app.use("/live", healthController.live)
+app.use("/ready", healthController.ready)
+app.use("/health", healthController.health)
 
 app.use(globalRateLimiter);
 
 import authRouter from "./modules/auth/auth.route.js";
 import urlRouter from "./modules/url/url.route.js";
+import { HealthController } from "./modules/health-check/health.controller.js";
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/urls", urlRouter);
