@@ -5,7 +5,7 @@ import { env } from "../config/env.config.js";
 import { redisConnection } from "../lib/redis.js";
 import { cacheWarmerQueue } from "../queues/cacheWarmerQueue.js";
 
-new Worker(
+export const cacheWarmerWorker = new Worker(
   cacheWarmerQueue.name,
   async (job) => {
     logger.info({
