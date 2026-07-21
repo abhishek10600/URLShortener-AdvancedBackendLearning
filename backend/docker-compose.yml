@@ -34,7 +34,6 @@ services:
 
   backend:
     image: url-shortener-backend:v1
-    container_name: url-shortener-api
 
     build:
       context: .
@@ -57,8 +56,6 @@ services:
 
   worker:
     image: url-shortener-worker:v1
-
-    container_name: url-shortener-worker
 
     build:
       context: .
