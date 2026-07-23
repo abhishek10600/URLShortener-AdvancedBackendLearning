@@ -17,6 +17,7 @@ app.set("trust proxy", 1);
 app.disable("x-powered-by");
 
 app.use(helmet());
+app.use(backendInstanceMiddleware);
 app.use(requestLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -39,6 +40,7 @@ app.use(globalRateLimiter);
 import authRouter from "./modules/auth/auth.route.js";
 import urlRouter from "./modules/url/url.route.js";
 import { HealthController } from "./modules/health-check/health.controller.js";
+import { backendInstanceMiddleware } from "./middlewares/backend-instance.middleware.js";
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/urls", urlRouter);
