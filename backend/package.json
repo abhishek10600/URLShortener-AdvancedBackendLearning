@@ -10,7 +10,8 @@
     "start": "node dist/index.js",
     "worker": "tsx src/starter-worker.ts",
     "db:migrate": "npx prisma migrate dev --name init",
-    "db:generate": "npx prisma generate"
+    "db:generate": "npx prisma generate",
+    "analyze:nginx": "tsx src/infrastructure/nginx/scripts/analyze-nginx-logs.ts"
   },
   "keywords": [],
   "author": "",
