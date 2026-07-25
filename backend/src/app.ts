@@ -9,7 +9,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { env } from "./config/env.config.js";
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
-// import { globalRateLimiter } from "./middlewares/rate-limit/global-rate-limit.middleware.js";
+import { globalRateLimiter } from "./middlewares/rate-limit/global-rate-limit.middleware.js";
 
 export const app = express();
 
@@ -35,7 +35,7 @@ app.use("/live", healthController.live)
 app.use("/ready", healthController.ready)
 app.use("/health", healthController.health)
 
-// app.use(globalRateLimiter);
+app.use(globalRateLimiter);
 
 import authRouter from "./modules/auth/auth.route.js";
 import urlRouter from "./modules/url/url.route.js";

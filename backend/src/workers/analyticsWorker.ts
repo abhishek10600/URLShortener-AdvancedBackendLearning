@@ -4,6 +4,9 @@ import { deadLetterQueue } from "../queues/deadLetterQueue.js";
 import { redisConnection } from "../lib/redis.js";
 import { analyticsService } from "../modules/analytics/analytics.container.js";
 import { RecordAnalyticsJob } from "./workers.types.js";
+import os from "node:os";
+
+const workerInstance = os.hostname()
 
 export const analyticsWorker = new Worker<RecordAnalyticsJob>(
   "analyticsQueue",
@@ -12,6 +15,7 @@ export const analyticsWorker = new Worker<RecordAnalyticsJob>(
       if (job.name === "record-analytics") {
         logger.info({
           event: "ANALYTICS_JOB_STARTED",
+          workerInstance,
           jobId: job.id,
           shortUrlId: job.data.shortUrlId,
         });
@@ -25,13 +29,18 @@ export const analyticsWorker = new Worker<RecordAnalyticsJob>(
 
         logger.info({
           event: "ANALYTICS_JOB_COMPLETED",
+          workerInstance,
           jobId: job.id,
           shortUrlId: job.data.shortUrlId,
         });
       }
     } catch (error) {
       logger.error({
-        message: `Job ${job.id} has failed`,
+        event: "ANALYTICS_JOB_FAILED",
+        workerInstance,
+        jobId: job.id,
+        shortUrlId: job.data.shortUrlId,
+        error,
       });
 
       await deadLetterQueue.add("failed-analytics", {
